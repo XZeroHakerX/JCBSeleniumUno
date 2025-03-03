@@ -11,115 +11,129 @@ import java.time.Duration;
 import java.util.*;
 
 public class Principal {
-    // Contador global para las capturas de pantalla
+
+    // Contador global para las capturas de pantalla:
     static int contadorScreen = 1;
 
-    public static void main(String[] args) {
-        // Configurar el path del ChromeDriver (ajusta la ruta según tu entorno)
+    public static void main(String[] XZeroHakerX) {
+
+        // Direccion del driver:
         System.setProperty("webdriver.chrome.driver", "C:\\Desarrollo\\Selenium\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe");
 
         Scanner inputScanner = new Scanner(System.in);
 
+
+        // Peticion de datos para el filtro:
         System.out.print("Edad minima: ");
-        int ageMin = inputScanner.nextInt();
+        int edadMin = inputScanner.nextInt();
         System.out.print("Edad maxima: ");
-        int ageMax = inputScanner.nextInt();
+        int edadMax = inputScanner.nextInt();
         System.out.print("Precio maximo: ");
-        double priceMax = inputScanner.nextDouble();
+        double precioMax = inputScanner.nextDouble();
 
 
+        // Inicio del driver y configuracion del driverwait
         WebDriver driver = new ChromeDriver();
-        // Configuración de espera explícita
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait espera = new WebDriverWait(driver, Duration.ofSeconds(5));
 
         try {
+
             // Acceder a la pagina principal
             driver.get("https://amazondating.co/");
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.className("product-grid")));
+            // Llamada a la espera con driverwait
+            espera.until(ExpectedConditions.presenceOfElementLocated(By.className("product-grid")));
 
-            // Extraer los elementos de producto
-            List<WebElement> productElements = driver.findElements(By.className("product-tile"));
-            List<Profile> profiles = new ArrayList<>();
+            // Extraer los perfiles como elementos:
+            List<WebElement> perfilesElementos = driver.findElements(By.className("product-tile"));
+            // Lista para los objetos perfiles que vamos extrayendo:
+            List<Profile> perfiles = new ArrayList<>();
 
-            // Recorremos cada producto para extraer la información
-            for (WebElement product : productElements) {
+            // Recorremos cada elemento-perfil para extraer la informacion:
+            for (WebElement perfil : perfilesElementos) {
+
                 try {
-                    // Se obtiene el enlace directo del producto (usando el primer <a>)
-                    WebElement linkElement = product.findElement(By.tagName("a"));
-                    String productUrl = linkElement.getAttribute("href");
+                    // Se busca y se obtiene el enlace del perfil para poder acceder a el:
+                    WebElement linkPerfil = perfil.findElement(By.tagName("a"));
+                    String perfilUrl = linkPerfil.getAttribute("href");
 
-                    // Extraemos el texto del nombre (formato: "Nombre, edad")
-                    WebElement nameElement = product.findElement(By.className("product-name"));
-                    String fullText = nameElement.getText().trim();
-                    String profileName = fullText.replaceAll("[0-9]", " ").replaceAll("[,]", " ").trim();
-                    // Se asume que la edad es la parte tras la última coma
-                    String ageToken = fullText.substring(fullText.lastIndexOf(",") + 1).trim();
-                    int profileAge = Integer.parseInt(ageToken);
+                    // Extraemos el texto del nombre
+                    WebElement nombrePerfil = perfil.findElement(By.className("product-name"));
+                    String nombreCompleto = nombrePerfil.getText().trim();
+                    String nombrePerfilTexto = nombreCompleto.replaceAll("[0-9]", " ").replaceAll("[,]", " ").trim();
+                    // Extraemos la edad del perfil:
+                    String edadToken = nombreCompleto.substring(nombreCompleto.lastIndexOf(",") + 1).trim();
+                    int edadPerfil = Integer.parseInt(edadToken);
 
-                    // Extraer rating a partir de la clase del div de estrellas
-                    WebElement starElement = product.findElement(By.xpath(".//div[contains(@class, 'stars')]"));
-                    String starClasses = starElement.getAttribute("class");
-                    double rating = convertirPuntuacion(starClasses);
+                    // Extraer puntuacion a partir de la clase del div de estrellas
+                    WebElement estrellasPerfil = perfil.findElement(By.xpath(".//div[contains(@class, 'stars')]"));
+                    String estrellas = estrellasPerfil.getAttribute("class");
+                    // Utilizamos el metodo para convertir la puntuacion:
+                    double puntuacion = convertirPuntuacion(estrellas);
 
-                    // Extraer el precio del producto
-                    WebElement priceContainer = product.findElement(By.xpath(".//div[contains(@class, 'product-price')]"));
-                    WebElement priceParagraph = priceContainer.findElement(By.tagName("p"));
-                    String priceText = priceParagraph.getText().trim();
-                    // Si el producto está marcado como no disponible, lo saltamos
-                    if (priceText.contains("Currently unavailable")) continue;
-                    double price = convertirPrecio(priceText);
+                    // Extraer el precio del perfil:
+                    WebElement precioPerfil = perfil.findElement(By.xpath(".//div[contains(@class, 'product-price')]"));
+                    WebElement precioPerfilTexto = precioPerfil.findElement(By.tagName("p"));
+                    String precioTexto = precioPerfilTexto.getText().trim();
+
+                    // Si el producto esta marcado como no disponible, lo saltamos
+                    if (precioTexto.contains("Currently unavailable")) continue;
+                    double precio = convertirPrecio(precioTexto);
 
                     // Agregamos el perfil a la lista
-                    profiles.add(new Profile(productUrl, profileName, profileAge, rating, price));
+                    perfiles.add(new Profile(perfilUrl, nombrePerfilTexto, edadPerfil, puntuacion, precio));
+
                 } catch (Exception ex) {
+
                     System.out.println("No se pudo procesar un producto: " + ex.getMessage());
+
                 }
             }
 
-            // Filtrar según criterios: rating >= 3, edad en el rango y precio <= precioMax
-            List<Profile> filteredProfiles = new ArrayList<>();
-            for (Profile p : profiles) {
-                if (p.getRating() >= 3.0 && p.getAge() >= ageMin && p.getAge() <= ageMax && p.getPrice() <= priceMax) {
-                    filteredProfiles.add(p);
+
+            // Aqui filtramos la lista con los criterios que queremos y que le hemos proporciando al principio:
+            List<Profile> perfilesFiltrados = new ArrayList<>();
+            for (Profile p : perfiles) {
+
+                if (p.getPuntuacion() >= 3.0 && p.getEdad() >= edadMin && p.getEdad() <= edadMax && p.getPrecio() <= precioMax) {
+                    perfilesFiltrados.add(p);
                 }
+
             }
 
-            // Ordenar de mayor a menor rating
-            filteredProfiles.sort((a, b) -> Double.compare(b.getRating(), a.getRating()));
+            // Ordenamos los perfiles para coger los mejores puntuados:
+            perfilesFiltrados.sort((a, b) -> Double.compare(b.getPuntuacion(), a.getPuntuacion()));
 
-            // Simular el proceso de compra en hasta 3 productos
-            int productsToBuy = Math.min(3, filteredProfiles.size());
-            for (int idx = 0; idx < productsToBuy; idx++) {
-                Profile current = filteredProfiles.get(idx);
-                System.out.println("Comprando: " + current);
-                // Abrir la página del producto
-                driver.get(current.getUrl());
-                takeScreenshot(driver);
+            // Ahora realizamos las 3 compras correspondientes con los 3 primeros perfiles:
+            int perfilesCompra = Math.min(3, perfilesFiltrados.size());
+            for (int idx = 0; idx < perfilesCompra; idx++) {
+
+                Profile actual = perfilesFiltrados.get(idx);
+                System.out.println("Comprando: " + actual);
+
+                // Abrimos la pagina del perfil
+                driver.get(actual.getUrl());
+                tomarCapturas(driver);
                 Thread.sleep(1000);
 
-                // Simulación de personalización: seleccionar un interés
-                // Se usa un XPath que busque un botón con data-interest que contenga "acts of service"
-                WebElement interestButton = wait.until(ExpectedConditions.elementToBeClickable(
-                        By.xpath("//button[contains(@data-interest, 'acts of service')]")));
-                interestButton.click();
-                takeScreenshot(driver);
+                // Cambiamos las opciones de personalizacion del perfil:
+                WebElement botonOpciones = espera.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(@data-interest, 'acts of service')]")));
+                botonOpciones.click();
+                tomarCapturas(driver);
                 Thread.sleep(1000);
 
-                // Agregar al carrito (se busca un botón con la clase "add-to-cart")
-                WebElement addToCartButton = wait.until(ExpectedConditions.elementToBeClickable(By.className("add-to-cart")));
-                addToCartButton.click();
+                // Agregamos el boton para añadir al carrito y damos click:
+                WebElement botonAniadir = espera.until(ExpectedConditions.elementToBeClickable(By.className("add-to-cart")));
+                botonAniadir.click();
                 Thread.sleep(1000);
-                takeScreenshot(driver);
+                tomarCapturas(driver);
 
-                // Confirmar la compra (se busca un botón con la clase "amazon-button")
-                WebElement purchaseButton = wait.until(ExpectedConditions.elementToBeClickable(By.className("amazon-button")));
-                purchaseButton.click();
+                // Agregamos el boton para la compra y damos click:
+                WebElement botonComprar = espera.until(ExpectedConditions.elementToBeClickable(By.className("amazon-button")));
+                botonComprar.click();
                 Thread.sleep(1000);
-                takeScreenshot(driver);
+                tomarCapturas(driver);
                 Thread.sleep(1000);
             }
-
-            // Espera final para revisión antes de cerrar
             Thread.sleep(1000);
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,7 +146,7 @@ public class Principal {
     // Metodo que extrae el rating a partir de la cadena de clases
     private static double convertirPuntuacion(String classString) throws Exception {
 
-        // Se espera que la clase tenga formato similar a "stars star-4-5" o "stars star-3"
+        // Cogemos la cadena de estrellas y modificamos la cadena para que se ajuste a un double:
         for (String token : classString.split("\\s+")) {
             if (token.startsWith("star-")) {
                 String numeroTexto = token.substring("star-".length()).replace("-", ".");
@@ -142,10 +156,10 @@ public class Principal {
         throw new Exception("No se pudo extraer el rating de: " + classString);
     }
 
-    // Metodo que parsea el precio a partir del texto (por ejemplo, "$59.99 ...")
+    // Metodo para la conversion del precio a un tipo double que sea compatible para la comparacion:
     private static double convertirPrecio(String text) throws Exception {
 
-        // Se elimina el símbolo de dólar y se extrae el primer token numérico
+        // Eliminamos el signo del dolar:
         String cleaned = text.replace("$", "").trim();
         String[] parts = cleaned.split("\\s+");
         if (parts.length > 0) {
@@ -154,14 +168,14 @@ public class Principal {
         throw new Exception("Precio no válido: " + text);
     }
 
-    // Metodo para tomar capturas de pantalla
-    private static void takeScreenshot(WebDriver driver) throws IOException, InterruptedException {
-        File sourceFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-        File destination = new File(Paths.get("./capturas/screenshot" + contadorScreen + ".png").toString());
-        FileUtils.copyFile(sourceFile, destination);
-        System.out.println("Captura guardada: " + destination.getAbsolutePath());
+    // Metodo para tomar capturas de pantalla:
+    private static void tomarCapturas(WebDriver driver) throws IOException, InterruptedException {
+        File archivo = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        File destino = new File(Paths.get("./capturas/screenshot" + contadorScreen + ".png").toString());
+        FileUtils.copyFile(archivo, destino);
+        System.out.println("Captura guardada: " + destino.getAbsolutePath());
         contadorScreen++;
-        Thread.sleep(2000);
+        Thread.sleep(1000);
     }
 }
 

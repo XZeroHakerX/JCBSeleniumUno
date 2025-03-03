@@ -1,46 +1,46 @@
 // Clase alternativa para representar un perfil de producto
 class Profile {
     private String url;
-    private String name;
-    private int age;
-    private double rating;
-    private double price;
+    private String nombre;
+    private int edad;
+    private double puntuacion;
+    private double precio;
 
-    public Profile(String url, String name, int age, double rating, double price) {
+    public Profile(String url, String nombre, int edad, double puntuacion, double precio) {
         this.url = url;
-        this.name = name;
-        this.age = age;
-        this.rating = rating;
-        this.price = price;
+        this.nombre = nombre;
+        this.edad = edad;
+        this.puntuacion = puntuacion;
+        this.precio = precio;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public String getName() {
-        return name;
+    public String getNombre() {
+        return nombre;
     }
 
-    public int getAge() {
-        return age;
+    public int getEdad() {
+        return edad;
     }
 
-    public double getRating() {
-        return rating;
+    public double getPuntuacion() {
+        return puntuacion;
     }
 
-    public double getPrice() {
-        return price;
+    public double getPrecio() {
+        return precio;
     }
 
     @Override
     public String toString() {
         return "Profile{" +
-                "name='" + name + '\'' +
-                ", age=" + age +
-                ", rating=" + rating +
-                ", price=" + price +
+                "name='" + nombre + '\'' +
+                ", age=" + edad +
+                ", rating=" + puntuacion +
+                ", price=" + precio +
                 ", url='" + url + '\'' +
                 '}';
     }
