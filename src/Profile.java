@@ -37,11 +37,11 @@ class Profile {
     @Override
     public String toString() {
         return "Profile{" +
-                "name='" + nombre + '\'' +
-                ", age=" + edad +
-                ", rating=" + puntuacion +
-                ", price=" + precio +
-                ", url='" + url + '\'' +
+                "url='" + url + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", edad=" + edad +
+                ", puntuacion=" + puntuacion +
+                ", precio=" + precio +
                 '}';
     }
 }

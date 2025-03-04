@@ -38,7 +38,7 @@ public class Principal {
 
         try {
 
-            // Acceder a la pagina principal
+            // Accder a la pagina principal
             driver.get("https://amazondating.co/");
             // Llamada a la espera con driverwait
             espera.until(ExpectedConditions.presenceOfElementLocated(By.className("product-grid")));
@@ -105,9 +105,9 @@ public class Principal {
 
             // Ahora realizamos las 3 compras correspondientes con los 3 primeros perfiles:
             int perfilesCompra = Math.min(3, perfilesFiltrados.size());
-            for (int idx = 0; idx < perfilesCompra; idx++) {
+            for (int i = 0; i < perfilesCompra; i++) {
 
-                Profile actual = perfilesFiltrados.get(idx);
+                Profile actual = perfilesFiltrados.get(i);
                 System.out.println("Comprando: " + actual);
 
                 // Abrimos la pagina del perfil
